@@ -1,5 +1,7 @@
 # Scheduling: Proportional Share
 
+How can we design a scheduler to share the CPU in a proportional manner? What are the key mechanisms for doing so? How effective are they?
+
 ## Tickets Represent Your Share
 
 - Scheduler holds a lottery, by randomly selecting a ticker (eg. between 0-99),

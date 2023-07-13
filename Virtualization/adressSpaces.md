@@ -1,5 +1,7 @@
 # The Abstraction: Address Spaces
 
+How can the OS build this abstraction of a private, potentially large address space for multiple running processes (all sharing memory) on top of a single, physical memory?
+
 ## Address Space
 
 - The address space of a process contains all of the memory state of the

@@ -1,5 +1,7 @@
 # Scheduling: The Multi-Level Feedback Queue
 
+How can we design a scheduler that both minimizes response time for interactive jobs while also minimizing turnaround time without a priori knowledge of job length?
+
 ## Basic Rules
 
 - Number of disting queue, each assigned a different priority level

@@ -1,5 +1,7 @@
 # Process
 
+Although there are only a few physical CPUs available, how can the OS provide the illusion of a nearly-endless supply of said CPUs?
+
 - A running program
 - The OS virtualizes the CPU so it appers that each process has its own CPU. This is done through a mechanism called context-switching, which enables time-sharing of the CPU, where each processor has some time to execute on the CPU. There are different policies which decide which process gets priority access to CPU.
 - Space-sharing is when we are sharing space, e.g. each file has its own space on the disk.

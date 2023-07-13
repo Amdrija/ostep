@@ -1,5 +1,7 @@
 # Process API
 
+What interfaces should the OS present for process creation and control? How should these interfaces be designed to enable powerful functionality, ease of use, and high performance?
+
 ## fork()
 
 - Creates a child process that continues on the same fork() call
