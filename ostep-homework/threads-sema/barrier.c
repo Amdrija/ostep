@@ -13,60 +13,81 @@
 // other integers to track things.
 
 typedef struct __barrier_t {
-    // add semaphores and other information here
+  // add semaphores and other information here
+  sem_t lock;
+  sem_t cond;
+  int threads_left;
 } barrier_t;
-
 
 // the single barrier we are using for this program
 barrier_t b;
 
 void barrier_init(barrier_t *b, int num_threads) {
-    // initialization code goes here
+  // initialization code goes here
+  Sem_init(&b->lock, 1);
+  Sem_init(&b->cond, 0);
+  b->threads_left = num_threads;
 }
 
 void barrier(barrier_t *b) {
-    // barrier code goes here
+  // barrier code goes here
+
+  // The lock is so that we can modify the number of threads that are not
+  // waiting
+  Sem_wait(&b->lock);
+  b->threads_left--;
+
+  // If there are no threads waiting, wake up one other thread
+  if (b->threads_left == 0) {
+    Sem_post(&b->cond);
+  }
+  // release the lock so someone else can start waiting
+  Sem_post(&b->lock);
+
+  // wait
+  Sem_wait(&b->cond);
+
+  // wake up another thread that's waiting
+  Sem_post(&b->cond);
 }
 
 //
 // XXX: don't change below here (just run it!)
 //
 typedef struct __tinfo_t {
-    int thread_id;
+  int thread_id;
 } tinfo_t;
 
 void *child(void *arg) {
-    tinfo_t *t = (tinfo_t *) arg;
-    printf("child %d: before\n", t->thread_id);
-    barrier(&b);
-    printf("child %d: after\n", t->thread_id);
-    return NULL;
+  tinfo_t *t = (tinfo_t *)arg;
+  printf("child %d: before\n", t->thread_id);
+  barrier(&b);
+  printf("child %d: after\n", t->thread_id);
+  return NULL;
 }
 
-
-// run with a single argument indicating the number of 
+// run with a single argument indicating the number of
 // threads you wish to create (1 or more)
 int main(int argc, char *argv[]) {
-    assert(argc == 2);
-    int num_threads = atoi(argv[1]);
-    assert(num_threads > 0);
+  assert(argc == 2);
+  int num_threads = atoi(argv[1]);
+  assert(num_threads > 0);
 
-    pthread_t p[num_threads];
-    tinfo_t t[num_threads];
+  pthread_t p[num_threads];
+  tinfo_t t[num_threads];
 
-    printf("parent: begin\n");
-    barrier_init(&b, num_threads);
-    
-    int i;
-    for (i = 0; i < num_threads; i++) {
-	t[i].thread_id = i;
-	Pthread_create(&p[i], NULL, child, &t[i]);
-    }
+  printf("parent: begin\n");
+  barrier_init(&b, num_threads);
 
-    for (i = 0; i < num_threads; i++) 
-	Pthread_join(p[i], NULL);
+  int i;
+  for (i = 0; i < num_threads; i++) {
+    t[i].thread_id = i;
+    Pthread_create(&p[i], NULL, child, &t[i]);
+  }
 
-    printf("parent: end\n");
-    return 0;
+  for (i = 0; i < num_threads; i++)
+    Pthread_join(p[i], NULL);
+
+  printf("parent: end\n");
+  return 0;
 }
-
